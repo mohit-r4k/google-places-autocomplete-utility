@@ -1,0 +1,41 @@
+<!-- File: google-autocomplete.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6IoNLUq0kEHUjf2X03l7ySFLAUqHoOSg&libraries=places"></script>
+</head>
+<body>
+    <input id="autocomplete" type="text" placeholder="Enter address" />
+
+    <script>
+        const input = document.getElementById('autocomplete');
+        const autocomplete = new google.maps.places.Autocomplete(input);
+
+        autocomplete.addListener('place_changed', () => {
+            const place = autocomplete.getPlace();
+            const address = {
+                street: '',
+                city: '',
+                state: '',
+                country: '',
+                postalCode: ''
+            };
+
+            place.address_components.forEach(comp => {
+                const types = comp.types;
+                if (types.includes('street_number')) address.street = comp.long_name;
+                if (types.includes('route')) address.street += ' ' + comp.long_name;
+                if (types.includes('locality')) address.city = comp.long_name;
+                if (types.includes('administrative_area_level_1')) address.state = comp.short_name;
+                if (types.includes('country')) address.country = comp.long_name;
+                if (types.includes('postal_code')) address.postalCode = comp.long_name;
+            });
+
+            window.parent.postMessage(JSON.stringify({
+                source: 'google-autocomplete',
+                address
+            }), '*');
+        });
+    </script>
+</body>
+</html>
