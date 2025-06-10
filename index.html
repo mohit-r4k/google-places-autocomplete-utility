@@ -54,7 +54,7 @@
                 city: '',
                 state: '',
                 country: '',
-                postalCode: ''
+                postcode: ''
             };
 
             place.address_components.forEach(comp => {
@@ -64,8 +64,14 @@
                 if (types.includes('locality')) address.city = comp.long_name;
                 if (types.includes('administrative_area_level_1')) address.state = comp.short_name;
                 if (types.includes('country')) address.country = comp.long_name;
-                if (types.includes('postal_code')) address.postalCode = comp.long_name;
+                if (types.includes('postal_code')) address.postcode = comp.long_name;
             });
+
+            // Extract lat/lng
+            if (place.geometry && place.geometry.location) {
+                address.latitude = place.geometry.location.lat();
+                address.longitude = place.geometry.location.lng();
+            }
 
             document.getElementById('street').value = address.street;
             document.getElementById('suburb').value = address.city;
